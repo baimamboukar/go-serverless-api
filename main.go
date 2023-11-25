@@ -3,12 +3,14 @@ package main
 import (
 	"context"
 	"net/http"
-	"time"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+	ginadapter "github.com/awslabs/aws-lambda-go-api-proxy/gin"
 	"github.com/gin-gonic/gin"
 )
+
+var ginLambda *ginadapter.GinLambda
 
 func init() {
 	//Set the router as the default one provided by Gin
@@ -16,35 +18,36 @@ func init() {
 	// Setup route group for the API
 	api := router.Group("/api")
 	{
-		api.GET("/", func(c *gin.Context) {
-			c.JSON(http.StatusOK, gin.H{
-				"message": "pong",
-			})
-		})
+		api.GET("/", RootHandler)
+		api.GET("/notes", NotesHandler)
 	}
 	// Start and run the server
-	router.Run(":3000")
+	ginLambda = ginadapter.New(router)
+}
+
+// AWS Lambda handler
+func PingGetHandler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	return ginLambda.ProxyWithContext(ctx, request)
+}
+
+// Handler for API group ping
+func RootHandler(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"status":  "success",
+		"message": "The beauty of Serverless is that you don't have to worry about the server.",
+	})
+}
+
+// Handler for API group ping
+func NotesHandler(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"code":    http.StatusOK,
+		"status":  "success",
+		"message": "Sense notes fetched!",
+		"notes":   []string{"Lorem ipsum dolor sit amet", "The beautiful thing is that no one can take it away from you", "The beautiful thing is that no one can take it away from you"},
+	})
 }
 
 func main() {
-	// engine := gin.Default()
-	// engine.GET("/ping", PingGetHandler)
-	//engine.POST("/ping", PingPostHandler)
-	// engine.Run()
-	lambda.Start(PingPostHandler)
-}
-
-func PingPostHandler(ctx context.Context, name events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	time.Sleep(5 * time.Second)
-	return events.APIGatewayProxyResponse{
-		StatusCode: http.StatusOK,
-		Body:       "Welcome to Go Serverless with AWS Lambda & API Gateway!",
-	}, nil
-}
-func PingGetHandler(c *gin.Context) {
-	c.JSON(200, gin.H{
-		"status":  200,
-		"message": "success",
-		"data":    "Welcome to Go Serverless with AWS Lambda & API Gateway!",
-	})
+	lambda.Start(PingGetHandler)
 }

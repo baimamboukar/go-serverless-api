@@ -13,8 +13,12 @@ functions:
    handler: bin/main
    events:
      - http:
-         path: /ping
+         path: /api
          method: GET
+     - http:
+         path: /api/notes
+         method: GET
+    
   
 
 package:
