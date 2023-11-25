@@ -8,11 +8,14 @@ provider:
 
 functions:
   api:
+   memorySize: 3008
+   timeout: 10
    handler: bin/main
    events:
      - http:
          path: /ping
          method: GET
+  
 
 package:
   patterns:
