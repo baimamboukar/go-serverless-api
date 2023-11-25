@@ -1,0 +1,20 @@
+service: go-serverless-apis-on-aws
+frameworkVersion: '>= 3.38.0'
+provider:
+  name: aws
+  runtime: go1.x
+  region: us-east-1
+  stage: ${opt:stage}
+
+functions:
+  api:
+   handler: bin/main
+   events:
+     - http:
+         path: /ping
+         method: GET
+
+package:
+  patterns:
+   - "!*/**"
+   - bin/main
