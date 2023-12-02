@@ -22,10 +22,11 @@ func init() {
 	{
 		players := api.Group("/players")
 		players.GET("/", PlayerRequestsHandler.PlayersIntroHandler)
-		//players.GET("/:id", PlayerHandler)
+		players.GET("/get/:id", PlayerRequestsHandler.GetPlayerHandler)
+		players.GET("/getAll", PlayerRequestsHandler.GetAllPlayersHandler)
 		players.POST("/create", PlayerRequestsHandler.CreatePlayerHandler)
-		//players.PUT("/update:id", UpdatePlayerHandler)
-		//players.DELETE("/delete:id", DeletePlayerHandler)
+		players.PUT("/update:id", PlayerRequestsHandler.UpdatePlayerHandler)
+		players.DELETE("/delete/:id", PlayerRequestsHandler.DeletePlayerHandler)
 
 		// Setup route group for characters
 		//	characters := api.Group("/characters")

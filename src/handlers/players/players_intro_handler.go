@@ -2,6 +2,7 @@ package players
 
 import (
 	"net/http"
+	"strconv"
 
 	ginadapter "github.com/awslabs/aws-lambda-go-api-proxy/gin"
 	"github.com/gin-gonic/gin"
@@ -77,4 +78,120 @@ func savePlayer(player *models.KenganPlayer) error {
 		return result.Error
 	}
 	return nil
+}
+
+// deletePlayer deletes a player from the database
+// Handles enpoint api/v1/players/delete/:id
+func DeletePlayerHandler(c *gin.Context) {
+	// Get the id of the player to delete
+	id := c.Param("id")
+	// Convert the id to an integer
+	intID, err := strconv.Atoi(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid player id provided"})
+		return
+	}
+
+	failed := deletePlayer(intID)
+	if failed != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete player"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Player deleted successfully!"})
+}
+func deletePlayer(id int) error {
+	db := database.GetDatabaseInstance()
+	result := db.Delete(&models.KenganPlayer{}, id)
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
+}
+
+// GetPlayerHandler gets a player from the database
+// Handles enpoint api/v1/players/:id
+
+func GetPlayerHandler(c *gin.Context) {
+	// Get the id of the player to delete
+	id := c.Param("id")
+	// Convert the id to an integer
+	intID, err := strconv.Atoi(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid player id provided"})
+		return
+	}
+
+	player, err := getPlayer(intID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get player"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Player retrieved successfully!", "data": player})
+}
+
+func getPlayer(id int) (*models.KenganPlayer, error) {
+	db := database.GetDatabaseInstance()
+	var player models.KenganPlayer
+	result := db.First(&player, id)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &player, nil
+}
+
+func UpdatePlayerHandler(c *gin.Context) {
+	// Get the id of the player to delete
+	id := c.Param("id")
+	// Convert the id to an integer
+	intID, err := strconv.Atoi(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid player id provided"})
+		return
+	}
+
+	// Create a new Character instance to unmarshal the request body into
+	var player models.KenganPlayer
+
+	// Bind the request body to the newCharacter struct
+	if err := c.BindJSON(&player); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload! All fields are required"})
+		return
+	}
+
+	failed := updatePlayer(intID, &player)
+	if failed != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update player"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Player updated successfully!"})
+}
+
+func updatePlayer(id int, player *models.KenganPlayer) error {
+	db := database.GetDatabaseInstance()
+	result := db.Model(&models.KenganPlayer{}).Where("id = ?", id).Updates(&player)
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
+}
+
+func GetAllPlayersHandler(c *gin.Context) {
+	players, err := getAllPlayers()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get players"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Players retrieved successfully!", "data": players})
+
+}
+
+func getAllPlayers() ([]models.KenganPlayer, error) {
+	db := database.GetDatabaseInstance()
+	var players []models.KenganPlayer
+	result := db.Find(&players)
+	if result.Error != nil {
+		return nil, nil
+	}
+	return players, nil
 }
