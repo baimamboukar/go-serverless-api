@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/aws/aws-lambda-go/events"
-	//"github.com/aws/aws-lambda-go/lambda"
+	"github.com/aws/aws-lambda-go/lambda"
 	ginadapter "github.com/awslabs/aws-lambda-go-api-proxy/gin"
 	"github.com/gin-gonic/gin"
 
@@ -25,7 +25,7 @@ func init() {
 		players.GET("/get/:id", PlayerRequestsHandler.GetPlayerHandler)
 		players.GET("/getAll", PlayerRequestsHandler.GetAllPlayersHandler)
 		players.POST("/create", PlayerRequestsHandler.CreatePlayerHandler)
-		players.PUT("/update:id", PlayerRequestsHandler.UpdatePlayerHandler)
+		players.PATCH("/update/:id", PlayerRequestsHandler.UpdatePlayerHandler)
 		players.DELETE("/delete/:id", PlayerRequestsHandler.DeletePlayerHandler)
 
 		// Setup route group for characters
@@ -45,8 +45,8 @@ func init() {
 
 	}
 	// Start and run the server
-	//ginLambda = ginadapter.New(router)
-	router.Run(":8000")
+	ginLambda = ginadapter.New(router)
+	//router.Run(":8000")
 }
 
 // AWS Lambda handler
@@ -56,6 +56,6 @@ func GinRequestHandler(ctx context.Context, request events.APIGatewayProxyReques
 
 func main() {
 	//init()
-	//lambda.Start(GinRequestHandler)
+	lambda.Start(GinRequestHandler)
 
 }

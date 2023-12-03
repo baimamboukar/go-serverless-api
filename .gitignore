@@ -1,4 +1,4 @@
 # ignored files by git
 .serverless
-.env*
+.env
 bin
