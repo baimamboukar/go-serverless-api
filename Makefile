@@ -1,5 +1,5 @@
 build:
-	env GOOS=linux go build -ldflags="-s -w" -o bin/main main.go
+	env GOOS=linux go build -ldflags="-s -w" -o bin/main src/main.go
 
 deploy: build
 	serverless deploy --stage prod
