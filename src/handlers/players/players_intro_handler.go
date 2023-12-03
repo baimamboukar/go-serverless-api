@@ -181,7 +181,6 @@ func GetAllPlayersHandler(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get players"})
 		return
 	}
-
 	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Players retrieved successfully!", "data": players})
 
 }

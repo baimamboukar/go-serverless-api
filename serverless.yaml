@@ -35,4 +35,4 @@ package:
   patterns:
     - "!*/**"
     - bin/main
-    - bin/kengan_ashura.sqlite
+    - src/kengan_ashura.sqlite
