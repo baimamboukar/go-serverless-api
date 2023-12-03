@@ -9,7 +9,7 @@ import (
 )
 
 func GetDatabaseInstance() *gorm.DB {
-	db, err := gorm.Open(sqlite.Open("../database/kengan_ashura.sqlite"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open("./kengan_ashura.sqlite"), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database")
 	}
