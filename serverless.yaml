@@ -8,20 +8,31 @@ provider:
 
 functions:
   api:
-   memorySize: 3008
-   timeout: 10
-   handler: bin/main
-   events:
-     - http:
-         path: /api
-         method: GET
-     - http:
-         path: /api/notes
-         method: GET
-    
-  
+    memorySize: 3008
+    timeout: 10
+    handler: bin/main
+    events:
+      - http:
+          path: /api/v1/players
+          method: GET
+      - http:
+          path: /api/v1/players/get/{id}
+          method: GET
+      - http:
+          path: /api/v1/players/getAll
+          method: GET
+      - http:
+          path: /api/v1/players/create
+          method: POST
+      - http:
+          path: /api/v1/players/update/{id}
+          method: PATCH
+      - http:
+          path: /api/v1/players/delete/{id}
+          method: DELETE
 
 package:
   patterns:
-   - "!*/**"
-   - bin/main
+    - "!*/**"
+    - bin/main
+    - bin/kengan_ashura.sqlite
