@@ -1,6 +1,6 @@
 build:
 	env GOOS=linux go build -ldflags="-s -w" -o bin/main src/main.go
-	cp src/kengan_ashura.sqlite bin/kengan_ashura.sqlite
+	cp src/.env bin/.env
 
 deploy: build
 	serverless deploy --stage prod

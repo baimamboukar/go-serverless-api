@@ -1,5 +1,6 @@
 service: serverless-go
 frameworkVersion: '>= 3.38.0'
+useDotenv: true
 provider:
   name: aws
   runtime: go1.x
@@ -33,6 +34,6 @@ functions:
 
 package:
   patterns:
-    - "!*/**"
-    - bin/main
-    - src/kengan_ashura.sqlite
+   # - "!*/**"
+   # - bin/main
+    - bin/*

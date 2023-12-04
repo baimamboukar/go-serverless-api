@@ -1,9 +1,13 @@
 package players
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	ginadapter "github.com/awslabs/aws-lambda-go-api-proxy/gin"
 	"github.com/gin-gonic/gin"
 
@@ -72,10 +76,28 @@ func CreatePlayerHandler(c *gin.Context) {
 }
 
 func savePlayer(player *models.KenganPlayer) error {
-	db := database.GetDatabaseInstance()
-	result := db.Create(&player)
-	if result.Error != nil {
-		return result.Error
+	table := "kengan_players"
+	svc, err := database.InitializeDynamoDB()
+	if err != nil {
+		return err
+	}
+	av, err := dynamodbattribute.MarshalMap(player)
+	if err != nil {
+		fmt.Println("Error marshaling item: ", err)
+		return err
+	}
+
+	// DynamoDB PutItem input
+	input := &dynamodb.PutItemInput{
+		Item:      av,
+		TableName: aws.String(table),
+	}
+
+	// PutItem operation
+	_, err = svc.PutItem(input)
+	if err != nil {
+		fmt.Println("Error putting item:", err)
+		return err
 	}
 	return nil
 }

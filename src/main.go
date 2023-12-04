@@ -2,19 +2,31 @@ package main
 
 import (
 	"context"
+	"log"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	ginadapter "github.com/awslabs/aws-lambda-go-api-proxy/gin"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 
 	EpisodesRequestsHandler "github.com/baimamboukar/go-serverless-api/src/handlers/episodes"
 	PlayerRequestsHandler "github.com/baimamboukar/go-serverless-api/src/handlers/players"
 )
 
+func LoadDotEnv() {
+	if err := godotenv.Load(); err != nil {
+		log.Fatal("Error loading .env file:", err)
+	}
+}
+
 var ginLambda *ginadapter.GinLambda
 
 func init() {
+
+	// Load .env file
+	LoadDotEnv()
+
 	//Set the router as the default one provided by Gin
 	router := gin.Default()
 	// Setup route group for the API
