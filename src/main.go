@@ -14,12 +14,18 @@ import (
 	PlayerRequestsHandler "github.com/baimamboukar/go-serverless-api/src/handlers/players"
 )
 
+// This function loads the `.env` file.
+//
+// # The file should contain your AWS credentials
+//
+// AWS_REGION - AWS_ACCESS_KEY - AWS_ACCESS_KEY_ID
 func LoadDotEnv() {
 	if err := godotenv.Load(); err != nil {
 		log.Fatal("Error loading .env file:", err)
 	}
 }
 
+// AWS gin lambda adapter
 var ginLambda *ginadapter.GinLambda
 
 func init() {
@@ -29,10 +35,17 @@ func init() {
 
 	//Set the router as the default one provided by Gin
 	router := gin.Default()
-	// Setup route group for the API
+
+	// Setup route group for KenganAshura Players
+	// Here we create a group `/api/v1`
+	// All the requests will be mapped to this group
+	// localhost:8080/api/v1/getAll
+
 	api := router.Group("/api/v1")
 	{
 		players := api.Group("/players")
+
+		// Mapping Player routes to their handlers
 		players.GET("/", PlayerRequestsHandler.PlayersIntroHandler)
 		players.GET("/get/:id", PlayerRequestsHandler.GetPlayerHandler)
 		players.GET("/getAll", PlayerRequestsHandler.GetAllPlayersHandler)
@@ -61,13 +74,17 @@ func init() {
 	//router.Run(":8000")
 }
 
-// AWS Lambda handler
+// AWS Lambda Proxy Handler
+// This handler acts like a bridge between AWS Lambda and our Local GIn server
+// It maps each GIN route to a Lambda function as handler
+//
+// This is useful to make our function execution possible.
 func GinRequestHandler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	return ginLambda.ProxyWithContext(ctx, request)
 }
 
 func main() {
-	//init()
+	// Starts Lambda server
 	lambda.Start(GinRequestHandler)
 
 }
