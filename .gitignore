@@ -2,3 +2,5 @@
 .serverless
 .env
 bin
+
+routines.go
