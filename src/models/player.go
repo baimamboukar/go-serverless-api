@@ -2,6 +2,7 @@ package models
 
 import "gorm.io/gorm"
 
+// KenganAshura Player Model
 type KenganPlayer struct {
 	gorm.Model
 	Name        string `json:"name"`
