@@ -18,5 +18,3 @@ This project demonstrates how to build and deploy serverless REST APIs using Go 
 - **AWS:** Runs on the AWS cloud platform, taking advantage of serverless services like AWS Lambda and API Gateway.
 - **Continuous Integration:** Integrates with Travis CI for continuous integration and automated builds.
 - **Test Coverage:** Monitors test coverage using Coveralls, ensuring a comprehensive test suite.
-
-## Getting Started
